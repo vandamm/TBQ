@@ -1,5 +1,8 @@
 'use strict';
 
+import {statSync} from 'fs';
+import {resolve} from 'path';
+
 function checkRegEx(text, pattern) {
   const regExp = new RegExp(pattern, 'i');
   const result = regExp.exec(text.toLowerCase().trim());
@@ -25,11 +28,7 @@ function findMatchingAction(command, allowedActions) {
 
 
 const character = {
-  $use: "use (.+)",
-  $approach: "approach (.+)",
-  $examine: "examine (.+)",
-  $return: "(?:return|back).*",
-  $anything: ".*",
+  cmd: {},
 
   actionByInput: function (text, allowedActions) {
     const matchedAction = findMatchingAction(text, allowedActions);
@@ -53,7 +52,7 @@ const character = {
         }
       }
 
-      allowedActions[matchedAction].forEach(object => {
+      allowedActions[matchedAction].forEach(function (object) {
         object.names.forEach(name => {
           if (name === matchedAction.objectName) {
             matchedAction.object = object;
@@ -70,5 +69,30 @@ const character = {
     }
   }
 };
+
+
+function getLocalePath(locale) {
+  return '../locale/' + locale + '/commands.json';
+}
+
+function localeFileExists(locale) {
+  const path = resolve(getLocalePath(locale));
+  const stats = statSync(path);
+  return stats.isFile();
+}
+
+function getCommandsForLocale(locale) {
+  if (localeFileExists(locale)) {
+    return require(getLocalePath(locale))
+  } else {
+    return 
+  }
+}
+
+function createCharacter(locale = 'en_US') {
+  const stats = statSync(resolve('../locale/' + locale));
+  if (stats)
+  const commands = require('../locale/' + locale)
+}
 
 module.exports = character;

@@ -1,0 +1,7 @@
+{
+  "$use": "use (.+)",
+  "$approach": "approach (.+)",
+  "$examine": "examine (.+)",
+  "$return": "(?:return|back).*",
+  "$anything": ".*"
+}
