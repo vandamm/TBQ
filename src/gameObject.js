@@ -1,60 +1,56 @@
 'use strict';
 
-const _ = require('lodash');
-const character = require('./character');
+import _ from 'lodash';
+import character from './character';
 
 
-function initActionsRegistration(availableActions) {
-  return function (command, item) {
-    if (!availableActions[command]) {
-      availableActions[command] = [];
+function initActionsRegistration(availableActionsList) {
+  return (action, target) => {
+    if (!availableActionsList[action]) {
+      availableActionsList[action] = [];
     }
-    availableActions[command].push(item);
+    availableActionsList[action].push(target);
   }
 }
 
-const gameObject = {
-  /** Generate command -> objects pairs list */
-  getAllowedActions: function getAllowedActions(entity) {
-    let actions = Object.create(null);
-    const registerAction = initActionsRegistration(actions);
+function registerActionsForObject(registerAction, object) {
+  if ('actions' in object) {
+    object.actions.forEach(action => {
+      registerAction(action, object)
+    })
+  }
+}
+
+export default {
+  getAllowedActions(entity) {
+    let allowedActions = Object.create(null);
+    const registerAction = initActionsRegistration(allowedActions);
 
     // Register actions on child objects
     if (typeof entity.objects === 'object') {
-      _.each(entity.objects, function (object) {
-        if (object.enabled === false) {
-          return;
-        }
+      _.each(entity.objects, childObject => {
+        if (childObject.enabled === false) return;
 
-        if (object.details) {
-          registerAction(character.$examine, object)
-        }
-        if (object.actions) {
-          _.each(object.actions, function (action) {
-            registerAction(action, object)
-          })
+        registerActionsForObject(registerAction, childObject);
+
+        if ('details' in childObject && childObject.actions.indexOf(character.$examine) === -1) {
+          registerAction(character.$examine, childObject)
         }
       })
     }
 
-    // Self-activation can be done too
-    if (Array.isArray(entity.actions)) {
-      entity.actions.forEach(function (action) {
-        registerAction(action, entity);
-      })
-    }
+    // Self-activation
+    registerActionsForObject(registerAction, entity);
 
     // If it's an object, add return and examine actions
     if (!entity.isRoom) {
-      actions[character.$return] = true;
+      allowedActions[character.$return] = true;
 
-      if (entity.details || entity.description) {
+      if (entity.actions.indexOf(character.$examine) === -1 && (entity.details || entity.description)) {
         registerAction(character.$examine, entity);
       }
     }
 
-    return actions;
+    return allowedActions;
   }
 };
-
-module.exports = gameObject;

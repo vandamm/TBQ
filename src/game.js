@@ -1,16 +1,15 @@
 'use strict';
 
-const _ = require('lodash');
-const jpp = require('json-path-processor');
-const config = require('config');
-const deepCopy = require('./deepCopy');
+import _ from 'lodash';
+import jpp from 'json-path-processor';
 
-const character = require('./character');
-const gameObject = require('./gameObject');
+import deepCopy from './deepCopy';
+import character from './character';
+import gameObject from './gameObject';
 
 var Game = {
 
-  init: function init(data) {
+  init (data) {
     this.startingRoom = data.start;
     this.endText = data.endText;
     this.rooms = deepCopy(data.rooms);
@@ -20,14 +19,14 @@ var Game = {
   },
 
 
-  getDescription: function getDescription() {
+  getDescription () {
     return this.currentObject !== null
       ? this.currentObject.description
       : this.rooms[this.currentRoom].description;
   },
 
 
-  changeRoom: function changeRoom(roomName) {
+  changeRoom (roomName) {
     const room = this.rooms[roomName];
     var description = '';
 
@@ -45,12 +44,12 @@ var Game = {
   },
 
 
-  returnToRoomCenter: function returnToRoomCenter() {
+  returnToRoomCenter () {
     return this.changeRoom(this.currentRoom);
   },
 
 
-  useObject: function useObject(object, action, text) {
+  useObject (object, action, text) {
 
     // If command activates the object, make it current
     if (object.actions.indexOf(action) > -1) {
@@ -72,8 +71,8 @@ var Game = {
     }
 
     var result;
-    if (action == character.$examine && object.details) {
-      result = object.details;
+    if (action === character.$examine) {
+      result = object.details ? object.details : object.description;
     } else {
       result = object.description;
     }
@@ -81,7 +80,7 @@ var Game = {
   },
 
 
-  getActionResult: function getActionResult(text) {
+  getActionResult (text) {
     if (this.end) {
       text += this.endText;
     }
@@ -92,15 +91,15 @@ var Game = {
   },
 
 
-  processPlayerInput: function processPlayerInput(text) {
-    const actionResult = character.actionByInput(text, this.allowedActions);
+  processPlayerInput (text) {
+    const actionResult = character.actionFromText(text, this.allowedActions);
 
     if (actionResult === undefined) {
-      return this.getActionResult(config.get('text.commandInvalid'));
+      return this.getActionResult(null);
     }
 
     var description;
-    if (actionResult.action == character.$return) { // Return to room
+    if (actionResult.action === character.$return) { // Return to room
       description = this.returnToRoomCenter();
     } else {
       description = this.useObject(actionResult.object, actionResult.action, text);
@@ -114,7 +113,7 @@ var Game = {
    * Main game loop
    * @returns {{end, text}}
    */
-  exec: function exec(text) {
+  exec (text) {
     if (!this.started) {
       this.started = true;
       return this.getActionResult(this.changeRoom(this.startingRoom));
@@ -126,14 +125,14 @@ var Game = {
   },
 
 
-  endGame: function endGame() {
+  endGame () {
     this.end = true;
   },
 
 
-  setProperties: function setProperties(data) {
+  setProperties (data) {
     const game = this;
-    _.each(data, function (value, path) {
+    _.each(data, (value, path) => {
       game.jpp.set(path, value);
     })
   }
@@ -141,7 +140,7 @@ var Game = {
 };
 
 
-module.exports = function createGame(questData, locale='en_US') {
+module.exports = function createGame(questData) {
   const game = Object.create(Game);
   game.init(questData);
   return game;
