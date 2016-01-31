@@ -1,5 +1,5 @@
 {
-  "name": "TBQ",
+  "name": "tbq",
   "version": "0.1.0",
   "description": "Text Based Quest games engine for node",
   "main": "lib/index.js",
@@ -18,8 +18,7 @@
     "adventure",
     "quest"
   ],
-  "author": "Van Damm",
-  "license": "ISC",
+  "author": "Alex Vansach <evilgreedystalker@gmail.com>",
   "bugs": {
     "url": "https://github.com/vandamm/TBQ/issues"
   },
