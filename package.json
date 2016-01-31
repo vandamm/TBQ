@@ -4,7 +4,7 @@
   "description": "Text Based Quest games engine for node",
   "main": "lib/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node_modules/.bin/tape -r babel-register tests/*.js | bash node_modules/.bin/tap-bail | bash node_modules/.bin/faucet",
     "compile": "babel -d lib/ src/",
     "prepublish": "npm run compile"
   },
@@ -27,6 +27,9 @@
   "devDependencies": {
     "babel-cli": "^6.4.5",
     "babel-preset-es2015": "^6.3.13",
-    "babel-preset-stage-0": "^6.3.13"
+    "babel-preset-stage-0": "^6.3.13",
+    "faucet": "0.0.1",
+    "tap-bail": "0.0.0",
+    "tape": "^4.4.0"
   }
 }
