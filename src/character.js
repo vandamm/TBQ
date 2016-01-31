@@ -31,7 +31,7 @@ const character = {
   $return: "(?:return|back).*",
   $anything: ".*",
 
-  actionByInput: function (text, allowedActions) {
+  actionByInput (text, allowedActions) {
     const matchedAction = findMatchingAction(text, allowedActions);
 
     if (matchedAction) {
@@ -59,15 +59,14 @@ const character = {
             matchedAction.object = object;
           }
         })
-      })
+      });
 
+      if (matchedAction.action && matchedAction.object) {
+        return matchedAction
+      }
     }
 
-    if (matchedAction.action && matchedAction.object) {
-      return matchedAction
-    } else {
-      return undefined;
-    }
+    return undefined;
   }
 };
 
