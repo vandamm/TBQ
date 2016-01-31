@@ -4,7 +4,7 @@
   "description": "Text Based Quest games engine for node",
   "main": "lib/index.js",
   "scripts": {
-    "test": "node_modules/.bin/tape -r babel-register tests/*.js | bash node_modules/.bin/tap-bail | bash node_modules/.bin/faucet",
+    "test": "node_modules/.bin/tape -r babel-core/register tests/*.js | bash node_modules/.bin/tap-bail | bash node_modules/.bin/faucet",
     "compile": "babel -d lib/ src/",
     "prepublish": "npm run compile"
   },
