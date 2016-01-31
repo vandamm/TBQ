@@ -25,10 +25,6 @@ function findMatchingAction(command, allowedActions) {
 }
 
 
-function matchAgainstObject(action, object) {
-
-}
-
 const character = {
   $use: "use (.+)",
   $approach: "approach (.+)",
@@ -36,6 +32,14 @@ const character = {
   $return: "(?:return|back).*",
   $anything: ".*",
 
+  /**
+   * Sample structure of allowedActions param:
+   * {
+   *  [character.$use]:     [ object1, object2 ]
+   *  [character.$examine]: [ object1, object2 ],
+   *  [character.$return]:  true
+   * }
+   */
   actionFromText (text, allowedActions) {
     const matchedAction = findMatchingAction(text, allowedActions);
 
