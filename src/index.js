@@ -1,7 +1,7 @@
 'use strict';
 
-import character from 'character';
-import createGame from 'game';
+import createGame from './game';
+import character from './character';
 
 module.exports = {
   createGame,
