@@ -26,11 +26,11 @@ function findMatchingAction(command, allowedActions) {
 
 
 const character = {
-  $use: "use (.+)",
-  $approach: "approach (.+)",
-  $examine: "examine (.+)",
-  $return: "(?:return|back).*",
-  $anything: ".*",
+  $use: 'использовать (.+)',
+  $approach: 'по(?:до)?йти (?:к|ко|в) (.+)',
+  $examine: 'осмотреть (.+)',
+  $return: 'вернуться.*',
+  $anything: '.*',
 
   /**
    * Sample structure of allowedActions param:
