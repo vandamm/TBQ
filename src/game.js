@@ -20,21 +20,17 @@ var Game = {
 
 
   getDescription () {
-    return this.currentObject !== null
-      ? this.currentObject.description
-      : this.rooms[this.currentRoom].description;
+    return this.currentObject !== null ?
+      this.currentObject.description :
+      this.rooms[this.currentRoom].description;
   },
 
 
   changeRoom (roomName) {
     const room = this.rooms[roomName];
-    var description = '';
-
-    if (this.currentRoom !== roomName && room.entryText !== null) {
-      description = room.entryText;
-    } else {
-      description = room.description;
-    }
+    const description = (this.currentRoom !== roomName && room.entryText !== null) ?
+      room.entryText :
+      room.description;
 
     this.currentRoom = roomName;
     this.currentObject = null;
@@ -60,17 +56,17 @@ var Game = {
         this.allowedActions = gameObject.getAllowedActions(object);
       }
 
-      var activationMessage;
       if (object.onActivate && typeof(object.onActivate) === 'function') {
-        activationMessage = object.onActivate(this, text, object);
+        const activationMessage = object.onActivate(this, text, object);
+
+        if (activationMessage) {
+          return activationMessage;
+        }
       }
 
-      if (activationMessage) {
-        return activationMessage;
-      }
     }
 
-    var result;
+    let result;
     if (action === character.$examine) {
       result = object.details ? object.details : object.description;
     } else {
