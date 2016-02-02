@@ -4,7 +4,7 @@
  * Deep copy properties of an object into flyweight
  * We're okay with having objects reference same functions as they always get game object as a param
  */
-export default function (obj) {
+function deepCopy(obj) {
   if (typeof obj !== 'object' || typeof obj === 'function') {
     return obj;
   }
@@ -19,3 +19,5 @@ export default function (obj) {
 
   return copy;
 }
+
+export default deepCopy;
