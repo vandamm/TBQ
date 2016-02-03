@@ -1,0 +1,11 @@
+{
+  "character": {
+    "actions": {
+      "use": "use (?:the|a|an)?\\s?(.+)",
+      "approach": "(?:approach|go to) (.+)",
+      "examine": "examine (?:the|a|an)?\\s?(.+)",
+      "back": "(?:return|back).*",
+      "anything": ".*"
+    }
+  }
+}
