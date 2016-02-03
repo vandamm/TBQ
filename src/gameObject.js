@@ -1,7 +1,7 @@
 'use strict';
 
 import _ from 'lodash';
-import character from './character';
+import {actions} from './character';
 
 
 function initActionsRegistration(availableActionsList) {
@@ -16,12 +16,13 @@ function initActionsRegistration(availableActionsList) {
 function registerActionsForObject(registerAction, object) {
   if ('actions' in object) {
     object.actions.forEach(action => {
-      registerAction(action, object)
-    })
+      registerAction(action, object);
+    });
   }
 }
 
-export default {
+const gameObject = {
+
   getAllowedActions(entity) {
     let allowedActions = Object.create(null);
     const registerAction = initActionsRegistration(allowedActions);
@@ -33,8 +34,8 @@ export default {
 
         registerActionsForObject(registerAction, childObject);
 
-        if ('details' in childObject && childObject.actions.indexOf(character.$examine) === -1) {
-          registerAction(character.$examine, childObject)
+        if ('details' in childObject && childObject.actions.indexOf(actions.examine) === -1) {
+          registerAction(actions.examine, childObject)
         }
       })
     }
@@ -44,13 +45,15 @@ export default {
 
     // If it's an object, add return and examine actions
     if (!entity.isRoom) {
-      allowedActions[character.$return] = true;
+      allowedActions[actions.back] = true;
 
-      if (entity.actions.indexOf(character.$examine) === -1 && (entity.details || entity.description)) {
-        registerAction(character.$examine, entity);
+      if (entity.actions.indexOf(actions.examine) === -1 && (entity.details || entity.description)) {
+        registerAction(actions.examine, entity);
       }
     }
 
     return allowedActions;
   }
 };
+
+export default gameObject;

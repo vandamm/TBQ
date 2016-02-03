@@ -1,23 +1,21 @@
-'use strict';
+'use strict'
 
 /**
  * Deep copy properties of an object into flyweight
  * We're okay with having objects reference same functions as they always get game object as a param
  */
-function deepCopy(obj) {
+export default function deepCopy(obj) {
   if (typeof obj !== 'object' || typeof obj === 'function') {
-    return obj;
+    return obj
   }
 
-  let copy = Array.isArray(obj) ? [] : Object.create(null);
+  let copy = Array.isArray(obj) ? [] : Object.create(null)
 
   for (let key in obj) {
     if (obj.hasOwnProperty(key)) {
-      copy[key] = deepCopy(obj[key]);
+      copy[key] = deepCopy(obj[key])
     }
   }
 
-  return copy;
+  return copy
 }
-
-export default deepCopy;
