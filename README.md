@@ -1,4 +1,8 @@
 # TBQ: Text Based Quest games engine
+
+[![Build Status](https://travis-ci.org/vandamm/TBQ.svg?branch=master)](https://travis-ci.org/vandamm/TBQ) 
+[![Dependency Status](https://gemnasium.com/vandamm/TBQ.svg)](https://gemnasium.com/vandamm/TBQ)
+
 Current version only supports Russian commands.
 
 Create a data file `data.json`:
