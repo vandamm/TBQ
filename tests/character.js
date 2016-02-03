@@ -1,29 +1,32 @@
-import test from 'tape';
-import character from '../src/character';
+'use strict';
 
+import test from 'tape';
+import createCharacter, {actions} from '../src/character';
+
+const character = createCharacter();
 
 test('Empty allowed actions list', t => {
   t.plan(1);
 
-  const actualResult = character.actionFromText('', []);
+  const actualResult = character.matchAllowedAction('', []);
   const expectedResult = undefined;
 
   t.equal(actualResult, expectedResult, 'Empty allowed actions should return undefined.');
 });
 
 
-test('$return action', t => {
+test('Back action', t => {
   t.plan(2);
 
   const expectedResult = {
-    action: character.$return
+    action: character.actions.back
   };
-  const actualResult = character.actionFromText('return', {
-    [character.$return]: null
+  const actualResult = character.matchAllowedAction('return', {
+    [character.actions.back]: null
   });
 
   t.notEqual(actualResult, undefined, 'Return action should be recognized.');
-  t.deepEqual(actualResult, expectedResult, 'Return action should yield character.$return.');
+  t.deepEqual(actualResult, expectedResult, 'Return action should yield actions.back.');
 });
 
 
@@ -31,17 +34,17 @@ test('Action that captures object', t => {
   t.plan(2);
 
   const actionTarget = {
-    actions: [character.$use],
+    actions: [actions.use],
     names: ['button']
   };
 
   const expectedResult = {
-    action: character.$use,
+    action: actions.use,
     object: actionTarget
   };
 
-  const actualResult = character.actionFromText('use button', {
-    [character.$use]: [actionTarget]
+  const actualResult = character.matchAllowedAction('use button', {
+    [actions.use]: [actionTarget]
   });
 
   t.notEqual(actualResult, undefined, 'Using object should return actual command');
@@ -62,11 +65,11 @@ test('Custom action', t => {
     object: actionTarget
   };
 
-  const actualResult = character.actionFromText(customAction, {
+  const actualResult = character.matchAllowedAction(customAction, {
     [customAction]: [actionTarget]
   });
 
-  t.notEqual(actualResult, undefined, 'Applying custom command should work');
+  t.notEqual(actualResult, undefined, 'Applying custom action should work');
   t.deepEqual(actualResult, expectedResult, 'Should return appropriate command and target');
 });
 
