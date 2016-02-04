@@ -77,11 +77,16 @@ function matchAllowedLocalAction(text, allowedActions, actionPatterns) {
 
 function createCharacter(locale) {
   const localeData = getLocaleData(locale);
+  let actionPatterns = {};
+
+  for (let actionName in localeData.character.actions) {
+    actionPatterns[actions[actionName]] = localeData.character.actions[actionName];
+  }
 
   return {
     actions,
     matchAllowedAction (text, allowedActions) {
-      return matchAllowedLocalAction(text, allowedActions, localeData.character.actions)
+      return matchAllowedLocalAction(text, allowedActions, actionPatterns)
     }
   }
 }
