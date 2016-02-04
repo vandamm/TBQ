@@ -73,3 +73,24 @@ test('Custom action', t => {
   t.deepEqual(actualResult, expectedResult, 'Should return appropriate command and target');
 });
 
+
+test('Localized action', t => {
+  const character = createCharacter('ru_RU');
+
+  const actionTarget = {
+    names: ['кнопку']
+  };
+
+  const expectedResult = {
+    action: actions.use,
+    object: actionTarget
+  };
+
+  const actualResult = character.matchAllowedAction('использовать кнопку', {
+    [actions.use]: [actionTarget]
+  });
+
+  t.plan(2);
+  t.notEqual(actualResult, undefined, 'should return actual command');
+  t.deepEqual(actualResult, expectedResult, 'should return appropriate command and target');
+})
