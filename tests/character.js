@@ -5,72 +5,81 @@ import createCharacter, {actions} from '../src/character';
 
 const character = createCharacter();
 
+const customAction = 'make a photo';
+const simpleTarget = {
+  names: ['button']
+};
+const advancedTarget = {
+  names: ['toggle', 'switch']
+}
+
+const actionsData = {
+  [actions.use]: [
+    simpleTarget,
+    advancedTarget
+  ],
+  [actions.examine]: [
+    advancedTarget
+  ],
+  [customAction]: [
+    advancedTarget
+  ],
+  [actions.back]: null
+}
+
 test('Empty allowed actions list', t => {
-  t.plan(1);
-
-  const actualResult = character.matchAllowedAction('', []);
   const expectedResult = undefined;
+  const actualResult = character.matchAllowedAction('back', []);
 
-  t.equal(actualResult, expectedResult, 'Empty allowed actions should return undefined.');
+  t.plan(1);
+  t.equal(actualResult, expectedResult, 'should return undefined.');
 });
 
 
 test('Back action', t => {
-  t.plan(2);
-
   const expectedResult = {
-    action: character.actions.back
+    action: actions.back
   };
-  const actualResult = character.matchAllowedAction('return', {
-    [character.actions.back]: null
-  });
 
-  t.notEqual(actualResult, undefined, 'Return action should be recognized.');
-  t.deepEqual(actualResult, expectedResult, 'Return action should yield actions.back.');
+  t.plan(2);
+  t.deepEqual(character.matchAllowedAction('return', actionsData), expectedResult, 'should return actions.back if called as "return"');
+  t.deepEqual(character.matchAllowedAction('back', actionsData), expectedResult, 'should return actions.back if called as "back"');
 });
 
 
 test('Action that captures object', t => {
-  t.plan(2);
-
-  const actionTarget = {
-    actions: [actions.use],
-    names: ['button']
-  };
-
   const expectedResult = {
     action: actions.use,
-    object: actionTarget
+    object: simpleTarget
   };
+  const actualResult = character.matchAllowedAction('use button', actionsData);
 
-  const actualResult = character.matchAllowedAction('use button', {
-    [actions.use]: [actionTarget]
-  });
-
-  t.notEqual(actualResult, undefined, 'Using object should return actual command');
-  t.deepEqual(actualResult, expectedResult, 'Should return appropriate command and target');
+  t.plan(1);
+  t.deepEqual(actualResult, expectedResult, 'should return appropriate command and target');
 });
 
 
-test('Custom action', t => {
-  t.plan(2);
-
-  const customAction = 'make a photo';
-  const actionTarget = {
-    actions: [customAction]
+test('Action on object with multiple names', t => {
+  const expectedResult = {
+    action: actions.use,
+    object: advancedTarget
   };
 
+  t.plan(2);
+  t.deepEqual(character.matchAllowedAction('use toggle', actionsData), expectedResult, 'should return appropriate command and target using name 1');
+  t.deepEqual(character.matchAllowedAction('use switch', actionsData), expectedResult, 'should return appropriate command and target using name 2');
+})
+
+
+test('Custom action', t => {
   const expectedResult = {
     action: customAction,
-    object: actionTarget
+    object: advancedTarget
   };
+  const actualResult = character.matchAllowedAction(customAction, actionsData);
 
-  const actualResult = character.matchAllowedAction(customAction, {
-    [customAction]: [actionTarget]
-  });
-
-  t.notEqual(actualResult, undefined, 'Applying custom action should work');
-  t.deepEqual(actualResult, expectedResult, 'Should return appropriate command and target');
+  t.plan(1);
+  t.deepEqual(actualResult, expectedResult, 'should return appropriate command and target');
 });
 
 
@@ -90,7 +99,7 @@ test('Localized action', t => {
     [actions.use]: [actionTarget]
   });
 
-  t.plan(2);
-  t.notEqual(actualResult, undefined, 'should return actual command');
+  t.plan(1);
   t.deepEqual(actualResult, expectedResult, 'should return appropriate command and target');
 })
+
