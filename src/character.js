@@ -16,7 +16,7 @@ function checkRegEx(text, pattern) {
 
 function matchAction(text, allowedActions, actionPatterns) {
   for (let action in allowedActions) {
-    const objectName = checkRegEx(text, actionPatterns[action]);
+    const objectName = checkRegEx(text, actionPatterns.hasOwnProperty(action) ? actionPatterns[action] : action);
     if (objectName !== null) {
       return {action, objectName};
     }
