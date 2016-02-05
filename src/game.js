@@ -4,12 +4,13 @@ import _ from 'lodash';
 import jpp from 'json-path-processor';
 
 import deepCopy from './deepCopy';
-import character from './character';
 import gameObject from './gameObject';
+import createCharacter from './character';
 
-var Game = {
+const Game = {
 
-  init (data) {
+  init (data, character) {
+    this.character = character;
     this.startingRoom = data.start;
     this.endText = data.endText;
     this.rooms = deepCopy(data.rooms);
@@ -67,7 +68,7 @@ var Game = {
     }
 
     let result;
-    if (action === character.$examine) {
+    if (action === this.character.actions.examine) {
       result = object.details ? object.details : object.description;
     } else {
       result = object.description;
@@ -88,14 +89,14 @@ var Game = {
 
 
   processPlayerInput (text) {
-    const actionResult = character.actionFromText(text, this.allowedActions);
+    const actionResult = this.character.matchAllowedAction(text, this.allowedActions);
 
     if (actionResult === undefined) {
       return this.getActionResult(null);
     }
 
     var description;
-    if (actionResult.action === character.$return) { // Return to room
+    if (actionResult.action === this.character.actions.back) { // Return to room
       description = this.returnToRoomCenter();
     } else {
       description = this.useObject(actionResult.object, actionResult.action, text);
@@ -109,7 +110,7 @@ var Game = {
    * Main game loop
    * @returns {{end, text}}
    */
-  exec (text) {
+    exec (text) {
     if (!this.started) {
       this.started = true;
       return this.getActionResult(this.changeRoom(this.startingRoom));
@@ -136,8 +137,9 @@ var Game = {
 };
 
 
-module.exports = function createGame(questData) {
+module.exports = function createGame(questData, locale) {
+  const character = createCharacter(locale);
   const game = Object.create(Game);
-  game.init(questData);
+  game.init(questData, character);
   return game;
 };

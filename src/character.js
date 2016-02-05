@@ -1,12 +1,12 @@
 'use strict';
 
-import _ from 'lodash';
+import getLocaleData from './locale';
 
 function checkRegEx(text, pattern) {
-  const regExp = new RegExp(pattern, 'i');
-  const result = regExp.exec(text.toLowerCase().trim());
+  const regExp = new RegExp(pattern, 'gi');
+  const result = regExp.exec(text.trim());
 
-  if (result) {
+  if (result !== null) {
     return result[1] ? result[1] : ''; // supporting the "no-capture" actions
   } else {
     return null;
@@ -14,9 +14,9 @@ function checkRegEx(text, pattern) {
 }
 
 
-function findMatchingAction(command, allowedActions) {
+function matchAction(text, allowedActions, actionPatterns) {
   for (let action in allowedActions) {
-    const objectName = checkRegEx(command, action);
+    const objectName = checkRegEx(text, actionPatterns[action]);
     if (objectName !== null) {
       return {action, objectName};
     }
@@ -24,55 +24,72 @@ function findMatchingAction(command, allowedActions) {
   return null;
 }
 
-
-const character = {
-  $use: 'использовать (.+)',
-  $approach: 'по(?:до)?йти (?:к|ко|в) (.+)',
-  $examine: 'осмотреть (.+)',
-  $return: 'вернуться.*',
-  $anything: '.*',
-
-  /**
-   * Sample structure of allowedActions param:
-   * {
-   *  [character.$use]:     [ object1, object2 ]
-   *  [character.$examine]: [ object1, object2 ],
-   *  [character.$return]:  true
-   * }
-   */
-  actionFromText (text, allowedActions) {
-    const matchedAction = findMatchingAction(text, allowedActions);
-
-    if (matchedAction) {
-      // $return command doesn't require a target
-      if (matchedAction.action === character.$return) {
-        delete matchedAction.objectName;
-        return matchedAction;
-      }
-
-      // Match returns empty string if command doesn't capture any objects
-      if (matchedAction.objectName === '') {
-        if (allowedActions[matchedAction.action].length == 1) {
-          matchedAction.object = allowedActions[matchedAction.action][0];
-        }
-      } else {
-        allowedActions[matchedAction.action].forEach(object => {
-          object.names.forEach(name => {
-            if (name === matchedAction.objectName) {
-              matchedAction.object = object;
-            }
-          })
-        });
-      }
-
-      if (matchedAction.action && matchedAction.object) {
-        delete matchedAction.objectName;
-        return matchedAction;
-      }
-    }
-
-    return undefined;
-  }
+export const actions = {
+  use: 'ACTION_USE',
+  approach: 'ACTION_APPROACH',
+  examine: 'ACTION_EXAMINE',
+  back: 'ACTION_RETURN',
+  anything: 'ACTION_ANY'
 };
 
-module.exports = character;
+
+/**
+ * Sample structure of allowedActions param:
+ * {
+   *  [character.use]:     [ object1, object2 ]
+   *  [character.examine]: [ object1, object2 ],
+   *  [character.back]:  true
+   * }
+ */
+function matchAllowedLocalAction(text, allowedActions, actionPatterns) {
+  const matched = matchAction(text, allowedActions, actionPatterns);
+
+  if (matched) {
+    // back command doesn't require a target
+    if (matched.action === actions.back) {
+      delete matched.objectName;
+      return matched;
+    }
+
+    // Match returns empty string if command doesn't capture any objects
+    if (matched.objectName === '') {
+      // TODO: This section looks sketchy. Need to refactor
+      if (allowedActions[matched.action].length == 1) {
+        matched.object = allowedActions[matched.action][0];
+      }
+    } else {
+      allowedActions[matched.action].forEach(object => {
+        object.names.forEach(name => {
+          if (name === matched.objectName) {
+            matched.object = object;
+          }
+        })
+      });
+    }
+
+    if (matched.action && matched.object) {
+      delete matched.objectName;
+      return matched;
+    }
+  }
+
+  return undefined;
+}
+
+function createCharacter(locale) {
+  const localeData = getLocaleData(locale);
+  let actionPatterns = {};
+
+  for (let actionName in localeData.character.actions) {
+    actionPatterns[actions[actionName]] = localeData.character.actions[actionName];
+  }
+
+  return {
+    actions,
+    matchAllowedAction (text, allowedActions) {
+      return matchAllowedLocalAction(text, allowedActions, actionPatterns)
+    }
+  }
+}
+
+export default createCharacter;
