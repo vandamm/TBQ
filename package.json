@@ -19,6 +19,7 @@
     "quest"
   ],
   "author": "Alex Vansach <evilgreedystalker@gmail.com>",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/vandamm/TBQ/issues"
   },
