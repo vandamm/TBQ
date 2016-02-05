@@ -3,10 +3,10 @@
 import getLocaleData from './locale';
 
 function checkRegEx(text, pattern) {
-  const regExp = new RegExp(pattern, 'i');
-  const result = regExp.exec(text.toLowerCase().trim());
+  const regExp = new RegExp(pattern, 'gi');
+  const result = regExp.exec(text.trim());
 
-  if (result) {
+  if (result !== null) {
     return result[1] ? result[1] : ''; // supporting the "no-capture" actions
   } else {
     return null;
@@ -14,9 +14,9 @@ function checkRegEx(text, pattern) {
 }
 
 
-function matchAction(command, allowedActions, actionPatterns) {
+function matchAction(text, allowedActions, actionPatterns) {
   for (let action in allowedActions) {
-    const objectName = checkRegEx(command, actionPatterns[action]);
+    const objectName = checkRegEx(text, actionPatterns[action]);
     if (objectName !== null) {
       return {action, objectName};
     }
@@ -53,6 +53,7 @@ function matchAllowedLocalAction(text, allowedActions, actionPatterns) {
 
     // Match returns empty string if command doesn't capture any objects
     if (matched.objectName === '') {
+      // TODO: This section looks sketchy. Need to refactor
       if (allowedActions[matched.action].length == 1) {
         matched.object = allowedActions[matched.action][0];
       }
