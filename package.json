@@ -1,6 +1,6 @@
 {
   "name": "tbq",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Text Based Quest games engine for node",
   "main": "lib/index.js",
   "scripts": {
