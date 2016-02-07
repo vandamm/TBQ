@@ -47,7 +47,7 @@ const gameObject = {
     if (!entity.isRoom) {
       allowedActions[actions.back] = true;
 
-      if (entity.actions.indexOf(actions.examine) === -1 && (entity.details || entity.description)) {
+      if ((entity.details || entity.description) && (!allowedActions[actions.examine] || allowedActions[actions.examine].indexOf(entity) === -1)) {
         registerAction(actions.examine, entity);
       }
     }
