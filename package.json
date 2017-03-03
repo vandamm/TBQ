@@ -34,7 +34,7 @@
     "babel-preset-es2015": "^6.3.13",
     "babel-preset-stage-0": "^6.3.13",
     "faucet": "0.0.1",
-    "tap-bail": "0.0.0",
+    "tap-bail": "1.0.0",
     "tap-spec": "^4.1.1",
     "tape": "^4.4.0"
   }
